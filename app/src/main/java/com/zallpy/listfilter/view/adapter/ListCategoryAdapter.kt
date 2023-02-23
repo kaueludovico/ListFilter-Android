@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.zallpy.listfilter.databinding.ResItemListBinding
 import com.zallpy.listfilter.model.Categories
 
-class ListCategoryAdapter(private val list: MutableList<Categories>) : Adapter<ViewHolder>() {
+class ListCategoryAdapter(private val list: List<Categories>) : Adapter<ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ListViewHolder(
             ResItemListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
