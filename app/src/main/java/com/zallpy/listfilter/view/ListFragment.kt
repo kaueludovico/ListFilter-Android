@@ -10,18 +10,21 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zallpy.listfilter.databinding.FragmentListBinding
 import com.zallpy.listfilter.model.Categories
 import com.zallpy.listfilter.resources.DBResourceMock
 import com.zallpy.listfilter.view.adapter.ListCategoryAdapter
+import com.zallpy.listfilter.viewModel.ListViewModel
 
 class ListFragment : Fragment() {
 
     private var _binding: FragmentListBinding? = null
-    private val binding get() = _binding
-    private lateinit var listAdapter: ListCategoryAdapter
-    private var listItems = DBResourceMock.getCategories()
+    val binding get() = _binding
+
+    private lateinit var viewModel: ListViewModel
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,37 +37,31 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setAdapter(listItems)
-        editorAction()
-    }
 
-    private fun setAdapter(list: List<Categories>) {
-        listAdapter = ListCategoryAdapter(
-            list
-        )
-
-        binding!!.recyclerView.apply {
-            adapter = listAdapter
-            layoutManager = LinearLayoutManager(requireContext())
+        binding?.let {
+            viewModel = ViewModelProvider(
+                this,
+                ListViewModel.ListViewModelProvider(it, ListFragment())
+            )[ListViewModel::class.java]
         }
+
+        viewModel.populateList()
+        editorAction()
     }
 
     private fun editorAction() {
         binding?.searchEditText?.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
+                // Do Nothing
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val filtered = listItems.filter {
-                    it.title.contains(s.toString())
-                }
-                setAdapter(filtered)
+                s?.let { viewModel.filterItems(it) }
             }
 
             override fun afterTextChanged(s: Editable?) {
+                // Do Nothing
             }
-
         })
     }
 }
